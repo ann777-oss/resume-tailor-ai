@@ -87,9 +87,6 @@ function DefaultHeader({ content }: ResumePreviewProps) {
       <div className={`relative mb-3 ${header.avatar_url ? 'min-h-[106px]' : ''}`}>
         <div className={header.avatar_url ? 'pr-24 text-center' : 'text-center'}>
           <h1 className="text-[2em] font-bold mb-1 tracking-widest">{header.name}</h1>
-          {header.job_title && (
-            <p className="text-[1.1em] text-gray-600 font-medium mb-2">{header.job_title}</p>
-          )}
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[0.95em] text-gray-500">
             {header.phone && <span>{header.phone}</span>}
             {header.email && <><span className="text-gray-300">|</span><span>{header.email}</span></>}
@@ -282,7 +279,6 @@ function ClassicHeader({ content }: ResumePreviewProps) {
     <div className={`relative ${header.avatar_url ? 'min-h-[132px]' : ''}`}>
       <div className={header.avatar_url ? 'pr-36' : ''}>
         <h1 className="text-[2.35em] font-black text-black tracking-wide mb-4">{header.name}</h1>
-        {header.job_title && <p className="text-[1.15em] mb-2">求职意向： {header.job_title}</p>}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-black">
           {header.phone && <span>电话： {header.phone}</span>}
           {header.email && <><span>|</span><span>邮箱： {header.email}</span></>}
