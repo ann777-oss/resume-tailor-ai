@@ -198,7 +198,7 @@ export default function BasicInfoSection({ profile, userId, onSaved }: Props) {
 
   return (
     <div className="space-y-5">
-      <SectionCard icon={User} title="个人信息" description="您的姓名、职称和联系方式">
+      <SectionCard icon={User} title="个人信息" description="您的姓名、当前身份和联系方式">
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-5 p-4 bg-gray-50 rounded-xl border border-gray-100">
           <div className="w-20 h-[106px] rounded-lg bg-white border border-gray-200 overflow-hidden flex items-center justify-center flex-shrink-0">
             {form.avatar_url ? (
@@ -248,8 +248,8 @@ export default function BasicInfoSection({ profile, userId, onSaved }: Props) {
             <Input value={form.full_name} onChange={(e) => handleChange('full_name', e.target.value)} placeholder="张三" />
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs font-medium text-gray-600">职位头衔</Label>
-            <Input value={form.professional_title} onChange={(e) => handleChange('professional_title', e.target.value)} placeholder="高级软件工程师" />
+            <Label className="text-xs font-medium text-gray-600">当前身份 / 专业方向</Label>
+            <Input value={form.professional_title} onChange={(e) => handleChange('professional_title', e.target.value)} placeholder="如 大三学生｜法学专业" />
           </div>
           <div className="space-y-1.5">
             <Label className="text-xs font-medium text-gray-600">邮箱地址</Label>
