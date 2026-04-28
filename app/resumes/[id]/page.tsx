@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ChevronLeft, Download, Save, Star, CreditCard as Edit3, Eye, FileText, ExternalLink, Calendar, Tag, SlidersHorizontal } from 'lucide-react';
 import AppLayout from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
-import ResumePreview from '@/components/resume/ResumePreview';
+import ResumePreviewCanvas from '@/components/resume/ResumePreviewCanvas';
 import ResumeEditor from '@/components/resume/ResumeEditor';
 import ResumeDesignPanel from '@/components/resume/ResumeDesignPanel';
 import { useAuth } from '@/contexts/AuthContext';
@@ -163,11 +163,7 @@ export default function ResumeDetailPage() {
           <ResumeEditor content={content} onUpdate={handleUpdateContent} />
         ) : (
           <div className="flex gap-6">
-            <div className="flex-1 bg-gray-100 rounded-xl p-6 flex justify-center">
-              <div className="w-[816px] shadow-lg rounded-sm overflow-hidden">
-                <ResumePreview content={content} />
-              </div>
-            </div>
+            <ResumePreviewCanvas content={content} />
             <div className="w-72 flex-shrink-0 space-y-4">
               {activeView === 'design' ? (
                 <ResumeDesignPanel
