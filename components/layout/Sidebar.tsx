@@ -24,9 +24,9 @@ export default function Sidebar() {
     : user?.email?.slice(0, 2).toUpperCase() ?? 'U';
 
   return (
-    <aside className="w-64 h-screen flex flex-col bg-white border-r border-gray-100 sticky top-0">
+    <aside data-tour="sidebar" className="w-64 h-screen flex flex-col bg-white border-r border-gray-100 sticky top-0">
       <div className="p-6 border-b border-gray-100">
-        <Link href="/dashboard" className="flex items-center gap-2.5 group">
+        <Link href="/dashboard" data-tour="app-logo" className="flex items-center gap-2.5 group">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-sm">
             <Sparkles className="w-4 h-4 text-white" />
           </div>
@@ -45,6 +45,15 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              data-tour={
+                item.href === '/profile'
+                  ? 'nav-profile'
+                  : item.href === '/jobs/new'
+                    ? 'nav-new-job'
+                    : item.href === '/resumes'
+                      ? 'nav-resumes'
+                      : undefined
+              }
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 group',
                 isActive
@@ -60,7 +69,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-gray-100">
+      <div data-tour="account-panel" className="p-4 border-t border-gray-100">
         <div className="flex items-center gap-3 px-3 py-2 rounded-lg mb-1">
           <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
             <span className="text-xs font-bold text-blue-700">{initials}</span>

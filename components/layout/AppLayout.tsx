@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Sidebar from './Sidebar';
 import { useAuth } from '@/contexts/AuthContext';
+import NewUserTour from '@/components/onboarding/NewUserTour';
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -38,6 +39,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       <main className="flex-1 overflow-auto">
         {children}
       </main>
+      <NewUserTour userId={user.id} />
     </div>
   );
 }
