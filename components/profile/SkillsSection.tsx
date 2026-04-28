@@ -16,17 +16,48 @@ interface Props {
   onSaved: () => void;
 }
 
-const CATEGORIES = ['Languages', 'Frontend', 'Backend', 'Databases', 'Cloud', 'DevOps', 'Mobile', 'Tools', 'Soft Skills', 'Other'];
-const PROFICIENCY = ['Beginner', 'Intermediate', 'Advanced', 'Expert'];
+const CATEGORIES = ['证书考试', '办公软件', '专业技能', '语言能力', '工具平台', '编程技术', '软技能', '其他'];
+const PROFICIENCY = ['了解', '熟悉', '熟练', '精通'];
+
+const CATEGORY_LABELS: Record<string, string> = {
+  Technical: '专业技能',
+  Languages: '编程语言',
+  Frontend: '前端开发',
+  Backend: '后端开发',
+  Databases: '数据库',
+  Cloud: '云服务',
+  DevOps: '开发运维',
+  Mobile: '移动开发',
+  Tools: '工具平台',
+  'Soft Skills': '软技能',
+  Other: '其他',
+};
+
+const PROFICIENCY_LABELS: Record<string, string> = {
+  Beginner: '了解',
+  Intermediate: '熟悉',
+  Advanced: '熟练',
+  Expert: '精通',
+};
+
+function getCategoryLabel(category: string) {
+  return CATEGORY_LABELS[category] ?? category;
+}
+
+function getProficiencyLabel(proficiency: string) {
+  return PROFICIENCY_LABELS[proficiency] ?? proficiency;
+}
+
+const DEFAULT_SKILL = { name: '', category: '证书考试', proficiency: '熟悉' };
 
 export default function SkillsSection({ userId, skills, onSaved }: Props) {
-  const [newSkill, setNewSkill] = useState({ name: '', category: 'Technical', proficiency: 'Intermediate' });
+  const [newSkill, setNewSkill] = useState(DEFAULT_SKILL);
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const grouped = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
-    const cat = skill.category || 'Other';
+    const cat = skill.category || '其他';
     if (!acc[cat]) acc[cat] = [];
     acc[cat].push(skill);
     return acc;
@@ -36,7 +67,7 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
     if (!newSkill.name.trim()) return;
     setSaving(true);
     await supabase.from('skills').insert({ ...newSkill, user_id: userId, sort_order: skills.length });
-    setNewSkill({ name: '', category: 'Technical', proficiency: 'Intermediate' });
+    setNewSkill(DEFAULT_SKILL);
     setSaving(false);
     setAdding(false);
     onSaved();
@@ -54,9 +85,14 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
       <SectionCard
         icon={Code}
         title="技能"
-        description="您希望重点展示的技术与软技能"
+        description="您希望重点展示的证书、工具、专业能力与软技能"
         action={
-          <Button size="sm" onClick={() => setAdding(!adding)} className={adding ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-blue-600 hover:bg-blue-700 text-white'} variant={adding ? 'ghost' : 'default'}>
+          <Button
+            size="sm"
+            onClick={() => setAdding(!adding)}
+            className={adding ? 'bg-gray-100 text-gray-700 hover:bg-gray-200' : 'bg-blue-600 hover:bg-blue-700 text-white'}
+            variant={adding ? 'ghost' : 'default'}
+          >
             {adding ? <X className="w-3.5 h-3.5 mr-1" /> : <Plus className="w-3.5 h-3.5 mr-1" />}
             {adding ? '取消' : '添加技能'}
           </Button>
@@ -70,7 +106,7 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
                 <Input
                   value={newSkill.name}
                   onChange={(e) => setNewSkill({ ...newSkill, name: e.target.value })}
-                  placeholder="如 TypeScript"
+                  placeholder="如计算机二级"
                   onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
                   autoFocus
                 />
@@ -80,7 +116,9 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
                 <Select value={newSkill.category} onValueChange={(v) => setNewSkill({ ...newSkill, category: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {CATEGORIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    {CATEGORIES.map((category) => (
+                      <SelectItem key={category} value={category}>{category}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -89,7 +127,9 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
                 <Select value={newSkill.proficiency} onValueChange={(v) => setNewSkill({ ...newSkill, proficiency: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
-                    {PROFICIENCY.map((p) => <SelectItem key={p} value={p}>{p}</SelectItem>)}
+                    {PROFICIENCY.map((proficiency) => (
+                      <SelectItem key={proficiency} value={proficiency}>{proficiency}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -111,12 +151,12 @@ export default function SkillsSection({ userId, skills, onSaved }: Props) {
           <div className="space-y-4">
             {Object.entries(grouped).map(([category, catSkills]) => (
               <div key={category}>
-                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{category}</p>
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{getCategoryLabel(category)}</p>
                 <div className="flex flex-wrap gap-2">
                   {catSkills.map((skill) => (
                     <div key={skill.id} className="group flex items-center gap-1.5 px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
                       <span className="text-sm text-gray-700 font-medium">{skill.name}</span>
-                      <span className="text-[10px] text-gray-400 font-medium">{skill.proficiency}</span>
+                      <span className="text-[10px] text-gray-400 font-medium">{getProficiencyLabel(skill.proficiency)}</span>
                       <button
                         onClick={() => handleDelete(skill.id)}
                         disabled={deleting === skill.id}
