@@ -47,6 +47,8 @@ export default function JobInputPage() {
   const router = useRouter();
 
   const handleAnalyze = async () => {
+    if (!companyName.trim()) { setError('请输入公司名称。'); return; }
+    if (!jobTitle.trim()) { setError('请输入职位名称。'); return; }
     if (!jobText.trim()) { setError('请粘贴职位描述。'); return; }
     if (!user) return;
     setError('');
@@ -98,15 +100,15 @@ export default function JobInputPage() {
 
         <div className="space-y-5">
           <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <h2 className="font-semibold text-gray-900 mb-4 text-sm">职位信息（选填）</h2>
+            <h2 className="font-semibold text-gray-900 mb-4 text-sm">职位信息（必填）</h2>
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-gray-600">公司名称</Label>
-                <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="如 Stripe" />
+                <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} placeholder="如 字节跳动" />
               </div>
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-gray-600">职位名称</Label>
-                <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="如 高级软件工程师" />
+                <Input value={jobTitle} onChange={(e) => setJobTitle(e.target.value)} placeholder="如 AI 产品实习生" />
               </div>
             </div>
           </div>
@@ -195,7 +197,7 @@ export default function JobInputPage() {
           <div className="flex justify-end">
             <Button
               onClick={handleAnalyze}
-              disabled={analyzing || !jobText.trim()}
+              disabled={analyzing || !companyName.trim() || !jobTitle.trim() || !jobText.trim()}
               className="bg-blue-600 hover:bg-blue-700 text-white px-6 gap-2 h-11"
             >
               {analyzing ? (

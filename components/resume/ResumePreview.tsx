@@ -82,11 +82,13 @@ function getResumeStyle(content: ResumeContent, classic: boolean): CSSProperties
 
 function DefaultHeader({ content }: ResumePreviewProps) {
   const { core_keywords, header } = content;
+  const intendedRole = header.job_title || header.title;
   return (
     <>
-      <div className={`relative mb-3 ${header.avatar_url ? 'min-h-[106px]' : ''}`}>
+      <div className={`relative mb-1.5 ${header.avatar_url ? 'min-h-[106px]' : ''}`}>
         <div className={header.avatar_url ? 'pr-24 text-center' : 'text-center'}>
           <h1 className="text-[2em] font-bold mb-1 tracking-widest">{header.name}</h1>
+          {intendedRole && <p className="mb-1 text-[1em] font-semibold text-gray-700">求职意向：{intendedRole}</p>}
           <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[0.95em] text-gray-500">
             {header.phone && <span>{header.phone}</span>}
             {header.email && <><span className="text-gray-300">|</span><span>{header.email}</span></>}
@@ -275,10 +277,12 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
 
 function ClassicHeader({ content }: ResumePreviewProps) {
   const { header } = content;
+  const intendedRole = header.job_title || header.title;
   return (
     <div className={`relative ${header.avatar_url ? 'min-h-[132px]' : ''}`}>
       <div className={header.avatar_url ? 'pr-36' : ''}>
-        <h1 className="text-[2.35em] font-black text-black tracking-wide mb-4">{header.name}</h1>
+        <h1 className="text-[2.35em] font-black text-black tracking-wide mb-1.5">{header.name}</h1>
+        {intendedRole && <p className="mb-2 text-[1.05em] font-bold text-black">求职意向：{intendedRole}</p>}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-black">
           {header.phone && <span>电话： {header.phone}</span>}
           {header.email && <><span>|</span><span>邮箱： {header.email}</span></>}
