@@ -43,23 +43,32 @@ export default function JobAnalysisPage() {
     setGenerating(true);
     try {
       const profile = await getMasterProfile(user.id);
-      const content = await generateTailoredResume(
-        profile,
-        job.analysis,
-        job.raw_text,
-        template,
-        job.job_title
-      );
+     const content = await generateTailoredResume(
+  profile,
+  job.analysis,
+  job.raw_text,
+  template,
+  job.job_title
+);
 
-      const { data, error } = await supabase
-        .from('resume_versions')
-        .insert({
-          user_id: user.id,
-          job_description_id: job.id,
-          name: `${job.job_title || '定制简历'} — ${job.company_name || '目标岗位'}`,
-          content: content as any,
-          status: 'draft',
-        })
+const normalizedContent = {
+  ...content,
+  header: {
+    ...content.header,
+    title: job.job_title || content.header.title,
+  },
+};
+
+const { data, error } = await supabase
+  .from('resume_versions')
+  .insert({
+    user_id: user.id,
+    job_description_id: job.id,
+    name: `${job.job_title || '定制简历'} — ${job.company_name || '目标岗位'}`,
+    content: normalizedContent as any,
+    status: 'draft',
+  })
+
         .select('id')
         .single();
 
