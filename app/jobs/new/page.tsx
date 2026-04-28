@@ -53,6 +53,7 @@ export default function JobInputPage() {
     setAnalyzing(true);
 
     try {
+      console.log('🔍 调试信息 - 新建求职时的职位名称:', jobTitle);
       const profile = await getMasterProfile(user.id);
       const analysis = await analyzeJobDescription(jobText, profile);
 
@@ -70,6 +71,8 @@ export default function JobInputPage() {
         })
         .select('id')
         .single();
+
+      console.log('✅ 保存到数据库的job_title:', jobTitle);
 
       if (insertError || !data) {
         setError('保存职位描述失败，请重试。');

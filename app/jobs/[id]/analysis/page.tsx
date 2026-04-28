@@ -40,6 +40,7 @@ export default function JobAnalysisPage() {
 
   const handleGenerate = async (template: TemplateSelection) => {
     if (!user || !job) return;
+    console.log('🔍 调试信息 - 生成简历时的job.job_title:', job.job_title);
     setGenerating(true);
     try {
       const profile = await getMasterProfile(user.id);
@@ -50,6 +51,8 @@ export default function JobAnalysisPage() {
         template,
         job.job_title
       );
+
+      console.log('✅ generateTailoredResume返回的content.header:', content.header);
 
       const { data, error } = await supabase
         .from('resume_versions')
