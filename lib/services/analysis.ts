@@ -57,7 +57,15 @@ export async function generateTailoredResume(
       'Authorization': `Bearer ${key}`,
       'Apikey': key,
     },
-    body: JSON.stringify({ profile, analysis, jobText, jobTitle, templateStyleDescription: template?.styleDescription }),
+    body: JSON.stringify({
+      profile,
+      analysis,
+      jobText,
+      jobTitle,
+      templateStyleDescription: template?.styleDescription,
+      templateConfig: template?.config,
+      templateImageUrl: template?.imageUrl,
+    }),
   });
 
   if (!response.ok) {
@@ -71,11 +79,12 @@ export async function generateTailoredResume(
   const savedTemplate = template
     ? {
         type: template.type,
-        id: template.id,
-        label: template.label,
-        styleDescription: template.styleDescription,
-        ...(template.type === 'builtin' ? { imageUrl: template.imageUrl } : {}),
-      }
+      id: template.id,
+      label: template.label,
+      imageUrl: template.imageUrl,
+      styleDescription: template.styleDescription,
+      ...(template.config ? { config: template.config } : {}),
+    }
     : undefined;
 
   const resume: ResumeContent = {

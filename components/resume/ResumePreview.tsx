@@ -14,20 +14,52 @@ function formatDate(dateStr: string): string {
   return `${year}.${month}`;
 }
 
-function DefaultSectionTitle({ children }: { children: ReactNode }) {
+function DefaultSectionTitle({
+  children,
+  accentColor = '#111827',
+  titleStyle = 'line',
+}: {
+  children: ReactNode;
+  accentColor?: string;
+  titleStyle?: 'line' | 'filled' | 'minimal';
+}) {
+  if (titleStyle === 'filled') {
+    return (
+      <div className="mb-2 mt-4">
+        <div className="inline-flex px-3 py-1 rounded-md text-white font-bold tracking-wide" style={{ backgroundColor: accentColor }}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  if (titleStyle === 'minimal') {
+    return (
+      <div className="mb-2 mt-4">
+        <h2 className="font-bold tracking-wide whitespace-nowrap" style={{ color: accentColor }}>{children}</h2>
+      </div>
+    );
+  }
+
   return (
     <div className="flex items-center gap-2 mb-2 mt-4">
-      <h2 className="font-bold text-gray-900 tracking-wide whitespace-nowrap">{children}</h2>
-      <div className="flex-1 h-[1.5px] bg-gray-900" />
+      <h2 className="font-bold tracking-wide whitespace-nowrap" style={{ color: accentColor }}>{children}</h2>
+      <div className="flex-1 h-[1.5px]" style={{ backgroundColor: accentColor }} />
     </div>
   );
 }
 
-function ClassicSectionTitle({ children }: { children: ReactNode }) {
+function ClassicSectionTitle({
+  children,
+  accentColor = '#244f72',
+}: {
+  children: ReactNode;
+  accentColor?: string;
+}) {
   return (
     <div className="mt-3 mb-1.5">
-      <h2 className="font-bold text-[#244f72] leading-none text-[1.35em]">{children}</h2>
-      <div className="mt-1 h-[2px] bg-[#244f72]" />
+      <h2 className="font-bold leading-none text-[1.35em]" style={{ color: accentColor }}>{children}</h2>
+      <div className="mt-1 h-[2px]" style={{ backgroundColor: accentColor }} />
     </div>
   );
 }
@@ -82,14 +114,17 @@ function getResumeStyle(content: ResumeContent, classic: boolean): CSSProperties
 
 function DefaultHeader({ content }: ResumePreviewProps) {
   const { core_keywords, header } = content;
+  const customConfig = content.template?.config;
   const intendedRole = header.job_title || header.title;
+  const headerCentered = (customConfig?.headerAlignment ?? 'center') === 'center';
+  const showPhoto = customConfig?.showPhoto ?? true;
   return (
     <>
-      <div className={`relative mb-1.5 ${header.avatar_url ? 'min-h-[106px]' : ''}`}>
-        <div className={header.avatar_url ? 'pr-24 text-center' : 'text-center'}>
+      <div className={`relative mb-1.5 ${header.avatar_url && showPhoto ? 'min-h-[106px]' : ''}`}>
+        <div className={header.avatar_url && showPhoto ? `pr-24 ${headerCentered ? 'text-center' : 'text-left'}` : headerCentered ? 'text-center' : 'text-left'}>
           <h1 className="text-[2em] font-bold mb-1 tracking-widest">{header.name}</h1>
           {intendedRole && <p className="mb-1 text-[1em] font-semibold text-gray-700">求职意向：{intendedRole}</p>}
-          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 text-[0.95em] text-gray-500">
+          <div className={`flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[0.95em] text-gray-500 ${headerCentered ? 'justify-center' : 'justify-start'}`}>
             {header.phone && <span>{header.phone}</span>}
             {header.email && <><span className="text-gray-300">|</span><span>{header.email}</span></>}
             {header.location && <><span className="text-gray-300">|</span><span>{header.location}</span></>}
@@ -98,7 +133,7 @@ function DefaultHeader({ content }: ResumePreviewProps) {
             {header.website && <><span className="text-gray-300">|</span><span>{header.website}</span></>}
           </div>
         </div>
-        {header.avatar_url && (
+        {header.avatar_url && showPhoto && (
           <img
             src={header.avatar_url}
             alt="个人证件照"
@@ -125,11 +160,14 @@ function DefaultHeader({ content }: ResumePreviewProps) {
 
 function DefaultSection({ content, section }: ResumePreviewProps & { section: ResumeSectionId }) {
   const { summary, experience, education, skills, projects, campusActivities = [], certifications } = content;
+  const customConfig = content.template?.config;
+  const accentColor = customConfig?.accentColor ?? '#111827';
+  const titleStyle = customConfig?.titleStyle ?? 'line';
 
   if (section === 'summary' && summary) {
     return (
       <>
-        <DefaultSectionTitle>个人简介</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>个人简介</DefaultSectionTitle>
         <p className="text-gray-700 leading-[inherit]">{summary}</p>
       </>
     );
@@ -138,7 +176,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'experience' && experience.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>实习 / 工作经历</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>实习 / 工作经历</DefaultSectionTitle>
         <div className="space-y-3">
           {experience.map((exp, idx) => (
             <div key={exp.id ?? idx}>
@@ -164,7 +202,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'projects' && projects.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>项目经历</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>项目经历</DefaultSectionTitle>
         <div className="space-y-2.5">
           {projects.map((proj, idx) => (
             <div key={proj.id ?? idx}>
@@ -192,7 +230,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'education' && education.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>教育背景</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>教育背景</DefaultSectionTitle>
         <div className="space-y-1.5">
           {education.map((edu, idx) => (
             <div key={edu.id ?? idx} className="flex items-baseline justify-between">
@@ -216,7 +254,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'campus' && campusActivities.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>校园经历</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>校园经历</DefaultSectionTitle>
         <div className="space-y-2.5">
           {campusActivities.map((activity, idx) => (
             <div key={activity.id ?? idx}>
@@ -243,7 +281,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'skills' && skills.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>专业技能</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>专业技能</DefaultSectionTitle>
         <div className="space-y-1">
           {skills.map((group) => (
             <div key={group.category} className="flex gap-1.5">
@@ -259,7 +297,7 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
   if (section === 'certifications' && certifications.length > 0) {
     return (
       <>
-        <DefaultSectionTitle>证书 & 奖项</DefaultSectionTitle>
+        <DefaultSectionTitle accentColor={accentColor} titleStyle={titleStyle}>证书 & 奖项</DefaultSectionTitle>
         <div className="space-y-1">
           {certifications.map((cert, idx) => (
             <div key={cert.id ?? idx} className="flex items-center justify-between">
@@ -277,10 +315,13 @@ function DefaultSection({ content, section }: ResumePreviewProps & { section: Re
 
 function ClassicHeader({ content }: ResumePreviewProps) {
   const { header } = content;
+  const customConfig = content.template?.config;
   const intendedRole = header.job_title || header.title;
+  const showPhoto = customConfig?.showPhoto ?? true;
+  const headerCentered = (customConfig?.headerAlignment ?? 'left') === 'center';
   return (
-    <div className={`relative ${header.avatar_url ? 'min-h-[132px]' : ''}`}>
-      <div className={header.avatar_url ? 'pr-36' : ''}>
+    <div className={`relative ${header.avatar_url && showPhoto ? 'min-h-[132px]' : ''}`}>
+      <div className={`${header.avatar_url && showPhoto ? 'pr-36' : ''} ${headerCentered ? 'text-center' : ''}`}>
         <h1 className="text-[2.35em] font-black text-black tracking-wide mb-1.5">{header.name}</h1>
         {intendedRole && <p className="mb-2 text-[1.05em] font-bold text-black">求职意向：{intendedRole}</p>}
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-black">
@@ -292,7 +333,7 @@ function ClassicHeader({ content }: ResumePreviewProps) {
           {header.location && <><span>|</span><span>{header.location}</span></>}
         </div>
       </div>
-      {header.avatar_url && (
+      {header.avatar_url && showPhoto && (
         <img
           src={header.avatar_url}
           alt="个人证件照"
@@ -417,7 +458,7 @@ function ClassicSection({ content, section }: ResumePreviewProps & { section: Re
 
 export default function ResumePreview({ content }: ResumePreviewProps) {
   const design = normalizeResumeDesign(content);
-  const classic = content.template?.id === 'classic-chinese';
+  const classic = content.template?.id === 'classic-chinese' || content.template?.config?.layout === 'classic';
   const visibleSections = design.sectionOrder.filter((section) => !design.hiddenSections.includes(section));
 
   return (

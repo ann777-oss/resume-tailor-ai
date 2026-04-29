@@ -40,20 +40,24 @@ export const FONT_FAMILIES: Record<ResumeDesignSettings['fontFamily'], string> =
 };
 
 export function getTemplateSectionOrder(content: ResumeContent): ResumeSectionId[] {
+  if (content.template?.config?.sectionOrder?.length) {
+    return content.template.config.sectionOrder;
+  }
   return content.template?.id === 'classic-chinese'
     ? CLASSIC_CHINESE_SECTION_ORDER
     : DEFAULT_SECTION_ORDER;
 }
 
 export function getDefaultResumeDesign(content: ResumeContent): ResumeDesignSettings {
+  const customConfig = content.template?.config;
   return {
     sectionOrder: getTemplateSectionOrder(content),
     hiddenSections: [],
-    marginX: content.template?.id === 'classic-chinese' ? 40 : 40,
-    marginY: content.template?.id === 'classic-chinese' ? 32 : 32,
-    fontFamily: 'microsoft',
-    fontScale: 100,
-    lineHeight: content.template?.id === 'classic-chinese' ? 1.45 : 1.5,
+    marginX: customConfig?.marginX ?? 40,
+    marginY: customConfig?.marginY ?? 32,
+    fontFamily: customConfig?.fontFamily ?? 'microsoft',
+    fontScale: customConfig?.fontScale ?? 100,
+    lineHeight: customConfig?.lineHeight ?? (content.template?.id === 'classic-chinese' ? 1.45 : 1.5),
   };
 }
 

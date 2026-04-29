@@ -131,6 +131,7 @@ export interface ResumeContent {
     label?: string;
     imageUrl?: string;
     styleDescription?: string;
+    config?: CustomTemplateConfig;
   };
   header: {
     name: string;
@@ -208,12 +209,29 @@ export interface ResumeDesignSettings {
   lineHeight: number;
 }
 
+export interface CustomTemplateConfig {
+  layout: 'default' | 'classic';
+  sectionOrder: ResumeSectionId[];
+  accentColor: string;
+  titleStyle: 'line' | 'filled' | 'minimal';
+  headerAlignment: 'left' | 'center';
+  showPhoto: boolean;
+  dateLayout: 'inline' | 'stacked' | 'three-column';
+  bulletStyle: 'dot' | 'dash';
+  marginX: number;
+  marginY: number;
+  fontFamily: ResumeDesignSettings['fontFamily'];
+  fontScale: number;
+  lineHeight: number;
+}
+
 export interface TemplateSelection {
   type: 'builtin' | 'custom';
   id?: string;
   label?: string;
   imageUrl?: string;
   styleDescription?: string;
+  config?: CustomTemplateConfig;
 }
 
 export interface ResumeVersion {
