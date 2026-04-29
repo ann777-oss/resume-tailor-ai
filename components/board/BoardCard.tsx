@@ -39,15 +39,15 @@ export default function BoardCard({ resume, onDragStart, onDuplicate, onArchive,
     <div
       draggable
       onDragStart={() => onDragStart(resume.id, resume.status as BoardStatus)}
-      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-150 cursor-grab active:cursor-grabbing group select-none"
+      className="bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-gray-200 transition-all duration-150 cursor-grab active:cursor-grabbing group select-none min-h-[118px]"
     >
-      <div className="p-3.5">
+      <div className="p-3.5 h-full">
         <div className="flex items-start gap-2.5">
           <div ref={dragHandleRef} className="mt-0.5 text-gray-200 group-hover:text-gray-400 transition-colors flex-shrink-0">
             <GripVertical className="w-3.5 h-3.5" />
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 min-h-[90px] flex flex-col">
             <div className="flex items-start justify-between gap-1.5 mb-1.5">
               <Link
                 href={`/resumes/${resume.id}`}
@@ -98,16 +98,18 @@ export default function BoardCard({ resume, onDragStart, onDuplicate, onArchive,
               </div>
             </div>
 
+            <div className="min-h-[18px] mb-1.5">
             {(company || jobTitle) && (
-              <div className="flex items-center gap-1 mb-2">
+              <div className="flex items-center gap-1">
                 <Building2 className="w-3 h-3 text-gray-300 flex-shrink-0" />
                 <span className="text-xs text-gray-400 truncate">
                   {[jobTitle, company].filter(Boolean).join(' · ')}
                 </span>
               </div>
             )}
+            </div>
 
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2 mt-auto">
               <span className="text-[11px] text-gray-300">{timeLabel}</span>
               {matchScore != null && (
                 <span className={`text-[11px] font-semibold px-1.5 py-0.5 rounded-md flex items-center gap-0.5 ${scoreColor}`}>
