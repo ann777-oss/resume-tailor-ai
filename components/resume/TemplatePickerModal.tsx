@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react';
 import { X, Check, Upload, FileImage, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/lib/supabase';
 import type { TemplateSelection } from '@/lib/types';
 export type { TemplateSelection } from '@/lib/types';
 
@@ -29,7 +28,6 @@ export default function TemplatePickerModal({ open, onClose, onConfirm, generati
   const [selected, setSelected] = useState<TemplateSelection>(BUILTIN_TEMPLATES[0]);
   const [customPreview, setCustomPreview] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState('');
-  const [analyzingTemplate, setAnalyzingTemplate] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   if (!open) return null;
@@ -50,47 +48,16 @@ export default function TemplatePickerModal({ open, onClose, onConfirm, generati
     }
 
     const reader = new FileReader();
-    reader.onload = async (ev) => {
+    reader.onload = (ev) => {
       const url = ev.target?.result as string;
       setCustomPreview(url);
-      setAnalyzingTemplate(true);
-
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/analyze-template`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {}),
-          },
-          body: JSON.stringify({ imageDataUrl: url }),
-        });
-
-        const json = await response.json();
-        if (!response.ok) {
-          throw new Error(json.error || '模板分析失败');
-        }
-
-        setSelected({
-          type: 'custom',
-          id: 'custom-upload',
-          label: file.name,
-          imageUrl: url,
-          styleDescription: json.styleDescription,
-          config: json.config,
-        });
-      } catch (error) {
-        setUploadError(error instanceof Error ? error.message : '模板分析失败，请重试。');
-        setSelected({
-          type: 'custom',
-          id: 'custom-upload',
-          label: file.name,
-          imageUrl: url,
-          styleDescription: '请尽量参考用户上传模板的标题层级、分栏结构、留白密度、配色和条目排版，生成风格接近的简历版式。',
-        });
-      } finally {
-        setAnalyzingTemplate(false);
-      }
+      setSelected({
+        type: 'custom',
+        id: 'custom-upload',
+        label: file.name,
+        imageUrl: url,
+        styleDescription: '请尽量参考用户上传模板的标题层级、分栏结构、留白密度、配色和条目排版，生成风格接近的简历版式。当前版本不会精确识别图片模板结构。',
+      });
     };
 
     reader.readAsDataURL(file);
@@ -108,7 +75,7 @@ export default function TemplatePickerModal({ open, onClose, onConfirm, generati
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <div>
             <h2 className="text-base font-semibold text-gray-900">选择简历模板</h2>
-            <p className="text-xs text-gray-500 mt-0.5">内置模板直接应用排版，自定义模板会先分析图片结构，再尽量精准复刻样式。</p>
+            <p className="text-xs text-gray-500 mt-0.5">内置模板直接应用排版，自定义模板当前作为样式参考使用，不再调用模板分析接口。</p>
           </div>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors">
             <X className="w-4 h-4" />
@@ -172,19 +139,12 @@ export default function TemplatePickerModal({ open, onClose, onConfirm, generati
                   </div>
                   <div className="text-center">
                     <p className="text-xs font-medium text-gray-700">上传自定义模板</p>
-                    <p className="text-[10px] text-gray-400 mt-1">AI 会分析模板结构<br />尽量精准复刻版式</p>
+                    <p className="text-[10px] text-gray-400 mt-1">上传图片做样式参考<br />当前不做精准识别</p>
                   </div>
                 </div>
               )}
             </button>
           </div>
-
-          {analyzingTemplate && (
-            <div className="mt-3 p-3 rounded-lg border border-blue-100 bg-blue-50 text-xs text-blue-700 flex items-center gap-2">
-              <span className="w-3.5 h-3.5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-              正在分析你上传的模板版式和样式，请稍等…
-            </div>
-          )}
 
           {uploadError && (
             <p className="mt-3 text-xs text-red-500 flex items-center gap-1.5">
@@ -217,7 +177,7 @@ export default function TemplatePickerModal({ open, onClose, onConfirm, generati
             <Button
               size="sm"
               onClick={() => onConfirm(selected)}
-              disabled={generating || analyzingTemplate || !selected}
+              disabled={generating || !selected}
               className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
             >
               {generating ? (
